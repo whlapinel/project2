@@ -522,13 +522,11 @@ posts.sort((a, b)=>Date.parse(a.date) - Date.parse(b.date));
 let currentPage = 1;
 
 function paginate() {
-  console.log(currentPage);
   let i = 0;
   const cards = document.querySelectorAll('.card');
   const upperLimit = currentPage * PAGE_LIMIT;
   const lowerLimit = (currentPage-1) * (PAGE_LIMIT);
   for (const card of cards) {
-    console.log(`card index: ${i}`);
     if ((i<lowerLimit) || (i>=upperLimit)) {
       card.classList.add('hidden');
     } else {
