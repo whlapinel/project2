@@ -274,6 +274,10 @@ form .accent-btn {
   color: var(--clr-gray);
 }
 
+.hidden {
+  display: none;
+}
+
 
 /*media query*/
 @media (max-width: 600px) {

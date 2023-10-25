@@ -519,3 +519,73 @@ const posts = [
 
 posts.sort((a, b)=>Date.parse(a.date) - Date.parse(b.date));
 
+let currentPage = 1;
+
+function paginate() {
+  console.log(currentPage);
+  let i = 0;
+  const cards = document.querySelectorAll('.card');
+  const upperLimit = currentPage * PAGE_LIMIT;
+  const lowerLimit = (currentPage-1) * (PAGE_LIMIT);
+  for (const card of cards) {
+    console.log(`card index: ${i}`);
+    if ((i<lowerLimit) || (i>=upperLimit)) {
+      card.classList.add('hidden');
+    } else {
+      card.classList.remove('hidden');
+    }
+    i += 1;
+  }
+}
+
+// create blog cards
+window.addEventListener('DOMContentLoaded', (event) => {
+  for (let post of posts) {
+    const articlesWrapper = document.querySelector('.articles-wrapper');
+    const card = document.createElement('article');
+    card.classList.add('card');
+    card.setAttribute('data-id',post.id);
+    articlesWrapper.appendChild(card);
+    const cardHeader = document.createElement('div');
+    cardHeader.classList.add('card-header');
+    card.appendChild(cardHeader);
+    const avatar = document.createElement('img');
+    avatar.srcset = post.profile;
+    avatar.setAttribute('alt','profile picture');
+    avatar.classList.add('avatar');
+    cardHeader.appendChild(avatar);
+    const authorDate = document.createElement('div');
+    authorDate.textContent = (`${post.author} · ${new Date(Date.parse(post.date)).toDateString()}`);
+    cardHeader.appendChild(authorDate);
+    const cardBody = document.createElement('div');
+    cardBody.classList.add('card-body');
+    card.appendChild(cardBody);
+    const title = document.createElement('h3');
+    title.textContent = post.title;
+    cardBody.appendChild(title);
+    const content = document.createElement('p');
+    if (post.content.length > MAX_LENGTH ) {
+      content.textContent = `${post.content.substring(0, MAX_LENGTH)}...`;
+    } else {
+      content.textContent = post.content;
+    }
+    cardBody.appendChild(content);
+  }
+  paginate();
+});
+
+// create pagination buttons
+for (let page = 1; page < (posts.length/PAGE_LIMIT); ++page) {
+  const pageBtn = document.createElement('button');
+  pageBtn.classList.add('page-btn');
+  pageBtn.textContent = page;
+  const paginationContainer = document.querySelector('.pagination-container');
+  paginationContainer.appendChild(pageBtn);
+  pageBtn.addEventListener('click', (e) => {
+    currentPage = e.target.textContent;
+    paginate();
+  });
+}
+
+
+
