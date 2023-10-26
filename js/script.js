@@ -651,7 +651,6 @@ posts.sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
 
 let currentPage = 1;
 
-
 function paginate() {
   let i = 0;
   const cards = document.querySelectorAll(".card");
@@ -695,4 +694,49 @@ for (let page = 1; page < posts.length / PAGE_LIMIT; ++page) {
     currentPage = e.target.textContent;
     paginate();
   });
+}
+
+// function for post button. create 1 function return post object, 
+// then call createCard(post) on that object
+// FIXME not working
+const submitBtn = document.querySelector('button[type="submit"]');
+submitBtn.addEventListener("click", function (event) {
+  event.preventDefault();
+  const post = createPost();
+  posts.unshift(post);
+  console.log(post);
+  console.log(posts);
+
+  // this is repeated code, should put under one function
+  const card = createCard(post);
+  const articlesWrapper = document.querySelector(".articles-wrapper");
+  articlesWrapper.appendChild(card);
+  paginate();
+})
+
+
+function createPost() {
+  if (document.querySelector("form").reportValidity()) {
+    const id = null;
+    const title = document.getElementById("title").value;
+    console.log(title);
+    document.getElementById("title").value = "";
+    const author = document.getElementById("author").value;
+    console.log(author);
+    document.getElementById("author").value = "";
+    const date = new Date().toString();
+    const profile = '../images/default.jpeg';
+    const content = document.getElementById("content").value;
+    console.log(content);
+    document.getElementById("content").value = "";
+    const post = {
+      id,
+      title,
+      author,
+      date,
+      profile,
+      content,
+    };
+    return post;
+  }
 }
