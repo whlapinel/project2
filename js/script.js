@@ -658,7 +658,6 @@ let nextID = 100;
 // FIXME this should be simplified using the global cards array and slice() method.
 function paginate() {
   let i = 0;
-  const cards = document.querySelectorAll(".card");
   const upperLimit = currentPage * PAGE_LIMIT;
   const lowerLimit = (currentPage - 1) * PAGE_LIMIT;
   for (const card of cards) {
@@ -779,7 +778,7 @@ function createPost() {
     const author = document.getElementById("author").value;
     document.getElementById("author").value = "";
     const date = new Date().toString();
-    const profile = "../images/default.jpeg";
+    const profile = 'images/default.jpeg';
     const content = document.getElementById("content").value;
     document.getElementById("content").value = "";
     const post = {
