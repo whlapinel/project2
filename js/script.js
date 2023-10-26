@@ -662,7 +662,6 @@ function paginate() {
   const upperLimit = currentPage * PAGE_LIMIT;
   const lowerLimit = (currentPage - 1) * PAGE_LIMIT;
   for (const card of cards) {
-    console.log(i);
     if (i < lowerLimit || i >= upperLimit) {
       card.classList.add("hidden");
     } else {
@@ -679,7 +678,6 @@ function createBlogs() {
   for (let post of posts) {
     const card = createCard(post);
     articlesWrapper.appendChild(card);
-    console.log(card);
     cards.push(card);
   }
   paginate();
