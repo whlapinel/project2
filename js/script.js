@@ -650,10 +650,10 @@ const posts = [
 const cards = [];
 const articlesWrapper = document.querySelector(".articles-wrapper");
 
-
 posts.sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
 
 let currentPage = 1;
+let nextID = 100;
 
 // FIXME this should be simplified using the global cards array and slice() method.
 function paginate() {
@@ -718,19 +718,71 @@ submitBtn.addEventListener("click", function (event) {
   paginate();
 });
 
+// event listener for articles-wrapper
+articlesWrapper.addEventListener("click", displayModal);
+document.querySelector(".close-btn").addEventListener("click", hideModal);
+
+// create modal elements
+// grab article-wrapper element
+const articleWrapper = document.querySelector(".article-wrapper");
+
+// create modal title h2 and append to article wrapper
+const modalArticleTitle = document.createElement("h2");
+articleWrapper.appendChild(modalArticleTitle);
+
+// create modal article-header div
+const modalArticleHeader = document.createElement("div");
+modalArticleHeader.classList.add("article-header");
+articleWrapper.appendChild(modalArticleHeader);
+
+// create img element avatar, assign post.profile, and append to article header
+const modalAvatar = document.createElement("img");
+modalAvatar.classList.add("avatar");
+modalAvatar.setAttribute("alt", "profile picture");
+modalArticleHeader.appendChild(modalAvatar);
+
+// create author date div, assign post.author and post.date, and append to article header
+const modalAuthorDate = document.createElement("div");
+modalArticleHeader.appendChild(modalAuthorDate);
+
+// create article body p element, assign post.content
+const modalArticleBody = document.createElement('p');
+articleWrapper.appendChild(modalArticleBody);
+
+// display modal function, called by event listener.
+function displayModal(e) {
+  const selectedCard = e.target.closest(".card");
+  // verify user clicked on descendant element of card
+  if (selectedCard !== null) {
+    document.querySelector(".modal").classList.remove("hidden");
+    const cardID = selectedCard.dataset.id;
+    const selectedPost = posts.find(hasID);
+    function hasID(post) {
+      return post.id === Number(cardID);
+    }
+    modalArticleTitle.textContent = selectedPost.title;
+    modalAvatar.src = selectedPost.profile;
+    modalAuthorDate.textContent = `${selectedPost.author} · 
+        ${new Date(Date.parse(selectedPost.date)).toDateString()}`;
+    modalArticleBody.textContent = selectedPost.content;
+  }
+}
+
+function hideModal(e) {
+  document.querySelector(".modal").classList.add("hidden");
+}
+
 function createPost() {
   if (document.querySelector("form").reportValidity()) {
-    const id = null;
+    const id = nextID;
+    nextID++;
     const title = document.getElementById("title").value;
-    console.log(title);
     document.getElementById("title").value = "";
     const author = document.getElementById("author").value;
-    console.log(author);
     document.getElementById("author").value = "";
     const date = new Date().toString();
     const profile = "../images/default.jpeg";
     const content = document.getElementById("content").value;
-    console.log(content);
     document.getElementById("content").value = "";
     const post = {
       id,
