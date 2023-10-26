@@ -647,16 +647,22 @@ const posts = [
   }
 ];
 
+const cards = [];
+const articlesWrapper = document.querySelector(".articles-wrapper");
+
+
 posts.sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
 
 let currentPage = 1;
 
+// FIXME this should be simplified using the global cards array and slice() method.
 function paginate() {
   let i = 0;
   const cards = document.querySelectorAll(".card");
   const upperLimit = currentPage * PAGE_LIMIT;
   const lowerLimit = (currentPage - 1) * PAGE_LIMIT;
   for (const card of cards) {
+    console.log(i);
     if (i < lowerLimit || i >= upperLimit) {
       card.classList.add("hidden");
     } else {
@@ -667,16 +673,19 @@ function paginate() {
 }
 
 // load blogs
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", createBlogs);
+
+function createBlogs() {
   for (let post of posts) {
-    const articlesWrapper = document.querySelector(".articles-wrapper");
     const card = createCard(post);
     articlesWrapper.appendChild(card);
+    console.log(card);
+    cards.push(card);
   }
   paginate();
-});
+}
 
-// toggle compose form
+// hide/show compose form
 const writeBtn = document.querySelector(".accent-btn");
 writeBtn.addEventListener("click", () => {
   const blogForm = document.querySelector(".form-container");
@@ -696,24 +705,18 @@ for (let page = 1; page < posts.length / PAGE_LIMIT; ++page) {
   });
 }
 
-// function for post button. create 1 function return post object, 
+// function for post button. create 1 function return post object,
 // then call createCard(post) on that object
-// FIXME not working
 const submitBtn = document.querySelector('button[type="submit"]');
 submitBtn.addEventListener("click", function (event) {
   event.preventDefault();
   const post = createPost();
-  posts.unshift(post);
-  console.log(post);
-  console.log(posts);
-
-  // this is repeated code, should put under one function
   const card = createCard(post);
-  const articlesWrapper = document.querySelector(".articles-wrapper");
-  articlesWrapper.appendChild(card);
+  posts.unshift(post);
+  cards.unshift(card);
+  articlesWrapper.prepend(card);
   paginate();
-})
-
+});
 
 function createPost() {
   if (document.querySelector("form").reportValidity()) {
@@ -725,7 +728,7 @@ function createPost() {
     console.log(author);
     document.getElementById("author").value = "";
     const date = new Date().toString();
-    const profile = '../images/default.jpeg';
+    const profile = "../images/default.jpeg";
     const content = document.getElementById("content").value;
     console.log(content);
     document.getElementById("content").value = "";
@@ -735,7 +738,7 @@ function createPost() {
       author,
       date,
       profile,
-      content,
+      content
     };
     return post;
   }
