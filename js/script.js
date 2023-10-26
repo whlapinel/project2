@@ -651,6 +651,7 @@ posts.sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
 
 let currentPage = 1;
 
+
 function paginate() {
   let i = 0;
   const cards = document.querySelectorAll(".card");
@@ -666,61 +667,21 @@ function paginate() {
   }
 }
 
-// create blog cards
-window.addEventListener("DOMContentLoaded", (event) => {
+// load blogs
+window.addEventListener("DOMContentLoaded", () => {
   for (let post of posts) {
-    // create card and append to articles wrapper
     const articlesWrapper = document.querySelector(".articles-wrapper");
-    const card = document.createElement("article");
-    card.classList.add("card");
-    card.setAttribute("data-id", post.id);
+    const card = createCard(post);
     articlesWrapper.appendChild(card);
-
-    // create card header and append to card
-    const cardHeader = document.createElement("div");
-    cardHeader.classList.add("card-header");
-    card.appendChild(cardHeader);
-
-    // create avatar and append to card header
-    const avatar = document.createElement("img");
-    avatar.srcset = post.profile;
-    avatar.setAttribute("alt", "profile picture");
-    avatar.classList.add("avatar");
-    cardHeader.appendChild(avatar);
-
-    // create author-date text and append to card header
-    const authorDate = document.createElement("div");
-    authorDate.textContent = `${post.author} · ${new Date(
-      Date.parse(post.date)
-    ).toDateString()}`;
-    cardHeader.appendChild(authorDate);
-
-    // create card body and append to card
-    const cardBody = document.createElement("div");
-    cardBody.classList.add("card-body");
-    card.appendChild(cardBody);
-
-    // create article title h3 and append to card body
-    const title = document.createElement("h3");
-    title.textContent = post.title;
-    cardBody.appendChild(title);
-
-    // create article content p and append to card body
-    const content = document.createElement("p");
-    if (post.content.length > MAX_LENGTH) {
-      content.textContent = `${post.content.substring(0, MAX_LENGTH)}...`;
-    } else {
-      content.textContent = post.content;
-    }
-    cardBody.appendChild(content);
   }
   paginate();
 });
 
+// toggle compose form
 const writeBtn = document.querySelector(".accent-btn");
 writeBtn.addEventListener("click", () => {
-  const blogForm = document.querySelector('.form-container');
-  blogForm.classList.toggle('hidden');
+  const blogForm = document.querySelector(".form-container");
+  blogForm.classList.toggle("hidden");
 });
 
 // create pagination buttons
