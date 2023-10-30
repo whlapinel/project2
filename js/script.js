@@ -654,13 +654,41 @@ posts.sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
 
 let currentPage = 1;
 let nextID = 100;
+let filteredPosts = posts;
+let filteredCards;
 
 // FIXME this should be simplified using the global cards array and slice() method.
+
+// clear pagination buttons
+function resetPagination() {
+  document.querySelectorAll('.page-btn').forEach((button) => button.remove());
+  // create pagination buttons
+  for (let page = 1; page < filteredCards.length / PAGE_LIMIT; ++page) {
+    const pageBtn = document.createElement("button");
+    pageBtn.classList.add("page-btn");
+    pageBtn.textContent = page;
+    const paginationContainer = document.querySelector(".pagination-container");
+    paginationContainer.appendChild(pageBtn);
+    pageBtn.addEventListener("click", switchPage);
+  }
+  paginate();
+}
+
+function switchPage(e) {
+  currentPage = e.target.textContent;
+  const activeBtn = document.querySelector(".page-btn.active");
+  if (activeBtn !== null) {
+    activeBtn.classList.remove("active");
+  }
+  e.currentTarget.classList.add("active");
+  paginate();
+}
+
 function paginate() {
   let i = 0;
   const upperLimit = currentPage * PAGE_LIMIT;
   const lowerLimit = (currentPage - 1) * PAGE_LIMIT;
-  for (const card of cards) {
+  for (const card of filteredCards) {
     if (i < lowerLimit || i >= upperLimit) {
       card.classList.add("hidden");
     } else {
@@ -679,7 +707,8 @@ function createBlogs() {
     articlesWrapper.appendChild(card);
     cards.push(card);
   }
-  paginate();
+  filteredCards = cards;
+  resetPagination();
 }
 
 // hide/show compose form
@@ -688,24 +717,6 @@ writeBtn.addEventListener("click", () => {
   const blogForm = document.querySelector(".form-container");
   blogForm.classList.toggle("hidden");
 });
-
-// create pagination buttons
-for (let page = 1; page < posts.length / PAGE_LIMIT; ++page) {
-  const pageBtn = document.createElement("button");
-  pageBtn.classList.add("page-btn");
-  pageBtn.textContent = page;
-  const paginationContainer = document.querySelector(".pagination-container");
-  paginationContainer.appendChild(pageBtn);
-  pageBtn.addEventListener("click", (e) => {
-    currentPage = e.target.textContent;
-    const activeBtn = document.querySelector(".page-btn.active");
-    if (activeBtn !== null) {
-      activeBtn.classList.remove("active");
-    }
-    e.currentTarget.classList.add("active");
-    paginate();
-  });
-}
 
 // function for post button. create 1 function return post object,
 // then call createCard(post) on that object
@@ -775,11 +786,10 @@ console.log(searchInput);
 searchInput.addEventListener("change", filterPosts);
 
 function filterPosts() {
-  const filteredPosts = posts.filter(searchPostForKey);
+  cards.forEach(card => card.classList.add('hidden'));
+  filteredPosts = posts.filter(searchPostForKey);
   console.log(filteredPosts);
   // add hidden class to all posts
-  cards.forEach((card) => card.classList.add('hidden'));
-
   // make array of filtered posts IDs
   const filteredPostIDs = [];
   for (const post of filteredPosts) {
@@ -788,17 +798,16 @@ function filterPosts() {
   }
 
   // remove hidden class from those in filtered posts
-  const filteredCards = [];
+  filteredCards = [];
   for (const card of cards) {
     console.log(card.dataset.id);
     if (filteredPostIDs.includes(Number(card.dataset.id))) {
-      console.log('true');
+      console.log("true");
       filteredCards.push(card);
-      card.classList.remove('hidden');
     }
   }
   console.log(filteredCards);
-
+  resetPagination();
 }
 
 function searchPostForKey(post) {
@@ -814,9 +823,9 @@ function searchPostForKey(post) {
 
 function searchObjectForKey(object) {
   for (const element of Object.values(object)) {
-      if (element.includes(searchKey)) {
-          return true;
-      }
+    if (element.includes(searchKey)) {
+      return true;
+    }
   }
   return false;
 }
