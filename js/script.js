@@ -698,6 +698,11 @@ for (let page = 1; page < posts.length / PAGE_LIMIT; ++page) {
   paginationContainer.appendChild(pageBtn);
   pageBtn.addEventListener("click", (e) => {
     currentPage = e.target.textContent;
+    const activeBtn = document.querySelector(".page-btn.active");
+    if (activeBtn !== null) {
+      activeBtn.classList.remove("active");
+    }
+    e.currentTarget.classList.add("active");
     paginate();
   });
 }
@@ -743,7 +748,7 @@ const modalAuthorDate = document.createElement("div");
 modalArticleHeader.appendChild(modalAuthorDate);
 
 // create article body p element, assign post.content
-const modalArticleBody = document.createElement('p');
+const modalArticleBody = document.createElement("p");
 articleWrapper.appendChild(modalArticleBody);
 
 // display modal function, called by event listener.
@@ -765,6 +770,57 @@ function displayModal(e) {
   }
 }
 
+const searchInput = document.querySelector('input[type="search"]');
+console.log(searchInput);
+searchInput.addEventListener("change", filterPosts);
+
+function filterPosts() {
+  const filteredPosts = posts.filter(searchPostForKey);
+  console.log(filteredPosts);
+  // add hidden class to all posts
+  cards.forEach((card) => card.classList.add('hidden'));
+
+  // make array of filtered posts IDs
+  const filteredPostIDs = [];
+  for (const post of filteredPosts) {
+    // console.log(post.id);
+    filteredPostIDs.push(post.id);
+  }
+
+  // remove hidden class from those in filtered posts
+  const filteredCards = [];
+  for (const card of cards) {
+    console.log(card.dataset.id);
+    if (filteredPostIDs.includes(Number(card.dataset.id))) {
+      console.log('true');
+      filteredCards.push(card);
+      card.classList.remove('hidden');
+    }
+  }
+  console.log(filteredCards);
+
+}
+
+function searchPostForKey(post) {
+  const searchKey = searchInput.value;
+  for (const element of Object.values(post)) {
+    // console.log(element);
+    if (String(element).includes(searchKey)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function searchObjectForKey(object) {
+  for (const element of Object.values(object)) {
+      if (element.includes(searchKey)) {
+          return true;
+      }
+  }
+  return false;
+}
+
 function hideModal(e) {
   document.querySelector(".modal").classList.add("hidden");
 }
@@ -778,7 +834,7 @@ function createPost() {
     const author = document.getElementById("author").value;
     document.getElementById("author").value = "";
     const date = new Date().toString();
-    const profile = 'images/default.jpeg';
+    const profile = "images/default.jpeg";
     const content = document.getElementById("content").value;
     document.getElementById("content").value = "";
     const post = {
@@ -790,5 +846,67 @@ function createPost() {
       content
     };
     return post;
+  }
+}
+
+function createCard(post) {
+  const card = createCardElement(post);
+  const cardHeader = createCardHeader();
+  card.appendChild(cardHeader);
+  const avatar = createAvatar(post);
+  cardHeader.appendChild(avatar);
+  const authorDate = createAuthorDate(post);
+  cardHeader.appendChild(authorDate);
+  const cardBody = createCardBody();
+  card.appendChild(cardBody);
+  const titleHeader = createTitleHeader(post);
+  cardBody.appendChild(titleHeader);
+  const content = createContentElement(post);
+  cardBody.appendChild(content);
+  return card;
+
+  function createCardElement(post) {
+    const card = document.createElement("article");
+    card.classList.add("card");
+    card.setAttribute("data-id", post.id);
+    return card;
+  }
+  function createCardHeader() {
+    const cardHeader = document.createElement("div");
+    cardHeader.classList.add("card-header");
+    return cardHeader;
+  }
+  function createAvatar(post) {
+    const avatar = document.createElement("img");
+    avatar.srcset = post.profile;
+    avatar.setAttribute("alt", "profile picture");
+    avatar.classList.add("avatar");
+    return avatar;
+  }
+  function createAuthorDate(post) {
+    const authorDate = document.createElement("div");
+    authorDate.textContent = `${post.author} · ${new Date(
+      Date.parse(post.date)
+    ).toDateString()}`;
+    return authorDate;
+  }
+  function createCardBody() {
+    const cardBody = document.createElement("div");
+    cardBody.classList.add("card-body");
+    return cardBody;
+  }
+  function createTitleHeader(post) {
+    const titleHeader = document.createElement("h3");
+    titleHeader.textContent = post.title;
+    return titleHeader;
+  }
+  function createContentElement(post) {
+    const content = document.createElement("p");
+    if (post.content.length > MAX_LENGTH) {
+      content.textContent = `${post.content.substring(0, MAX_LENGTH)}...`;
+    } else {
+      content.textContent = post.content;
+    }
+    return content;
   }
 }
