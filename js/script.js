@@ -659,11 +659,11 @@ let filteredCards;
 
 // FIXME this should be simplified using the global cards array and slice() method.
 
-// clear pagination buttons
 function resetPagination() {
+  // clear pagination buttons
   document.querySelectorAll('.page-btn').forEach((button) => button.remove());
   // create pagination buttons
-  for (let page = 1; page < filteredCards.length / PAGE_LIMIT; ++page) {
+  for (let page = 1; page < ((filteredCards.length / PAGE_LIMIT) + 1); ++page) {
     const pageBtn = document.createElement("button");
     pageBtn.classList.add("page-btn");
     pageBtn.textContent = page;
@@ -727,8 +727,10 @@ submitBtn.addEventListener("click", function (event) {
   const card = createCard(post);
   posts.unshift(post);
   cards.unshift(card);
+  filteredCards = cards;
+  filteredPosts = posts;
   articlesWrapper.prepend(card);
-  paginate();
+  resetPagination();
 });
 
 // event listener for articles-wrapper
